@@ -60,22 +60,22 @@
                 <thead>
                     <tr>
                         <th>Name</th>
-                        <th>Location</th>
                         <th>Date</th>
                         <th>Start</th>
                         <th>Finish</th>
                         <th>Total Hours</th>
+                        <th>Location</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for row in rows %}
                     <tr>
                         <td><strong>{{ row.name }}</strong></td>
-                        <td>{{ row.location }}</td>
                         <td>{{ row.date }}</td>
                         <td>{{ row.start }}</td>
                         <td>{{ row.finish }}</td>
                         <td><strong>{{ row.hours }}</strong></td>
+                        <td>{{ row.location }}</td>
                     </tr>
                     {% else %}
                     <tr>

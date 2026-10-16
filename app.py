@@ -18,6 +18,13 @@ def init_db():
             timestamp TEXT NOT NULL
         )
     ''')
+
+    cursor.execute('PRAGMA table_info(attendance)')
+    columns = [column[1] for column in cursor.fetchall()]
+    if 'location' not in columns:
+        cursor.execute('ALTER TABLE attendance ADD COLUMN location TEXT')
+        cursor.execute("UPDATE attendance SET location = 'Unknown' WHERE location IS NULL")
+
     conn.commit()
     conn.close()
 
@@ -63,7 +70,7 @@ def get_logs(location):
     ''', (location,))
     rows = cursor.fetchall()
     conn.close()
-    
+    #jfajshfj bjs 
     logs = [{'name': r[0], 'action': r[1], 'timestamp': r[2]} for r in rows]
     return jsonify(logs)
 
@@ -99,19 +106,18 @@ def admin_dashboard():
     conn.close()
 
     # Process logs into paired shifts: Name, Location, Day, Start Time, Finish Time, Total Hours
-    sessions_dict = {} # Key: (name, date), Value: {'in': time, 'out': time, 'location': loc}
+    sessions_dict = {}  # Key: (name, date, location), Value: {'in': time, 'out': time, 'location': loc}
     report_rows = []
 
     for row in rows:
         name, action, location, timestamp = row
         dt = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S')
         date_str = dt.strftime('%Y-%m-%d')
-        time_str = dt.strftime('%H:%M:%S')
 
-        key = (name, date_str)
+        key = (name, date_str, location)
 
         if action == 'Clock In':
-            # If they clocked in, record it (overwriting if multiple, or tracking latest open shift)
+            # Keep each location separate so Kitchen and Market entries do not overwrite each other
             sessions_dict[key] = {'name': name, 'location': location, 'date': date_str, 'in': dt, 'out': None}
         elif action == 'Clock Out':
             if key in sessions_dict:
