@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Time Clock</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .admin-container {
+            max-width: 900px;
+            margin: 30px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            text-align: left;
+        }
+        .header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 15px;
+        }
+        th, td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+        }
+        th {
+            background: #f8f9fa;
+            color: #444;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="admin-container">
+        <div class="header-flex">
+            <h2>Time Clock Management</h2>
+            <a href="/admin/logout" class="logout-btn">Logout</a>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Location</th>
+                        <th>Date</th>
+                        <th>Start</th>
+                        <th>Finish</th>
+                        <th>Total Hours</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in rows %}
+                    <tr>
+                        <td><strong>{{ row.name }}</strong></td>
+                        <td>{{ row.location }}</td>
+                        <td>{{ row.date }}</td>
+                        <td>{{ row.start }}</td>
+                        <td>{{ row.finish }}</td>
+                        <td><strong>{{ row.hours }}</strong></td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" style="text-align: center; color: #777; padding: 20px;">No attendance records found yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ location }} - Work Time Clock</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <div class="card">
+        <h2>{{ location }} Time Clock</h2>
+        <input type="text" id="employeeName" placeholder="Enter your name">
+        
+        <div class="btn-group">
+            <button class="in" onclick="submitAction('Clock In')">Clock In</button>
+            <button class="out" onclick="submitAction('Clock Out')">Clock Out</button>
+        </div>
+        
+        <div id="message"></div>
+    </div>
+
+    <!-- The recent logs table has been removed from here so employees cannot see past hours -->
+
+    <script>
+        const currentLocation = "{{ location }}";
+
+        async function submitAction(action) {
+            const name = document.getElementById('employeeName').value.trim();
+            const msg = document.getElementById('message');
+            
+            if (!name) {
+                msg.style.color = 'red';
+                msg.textContent = 'Please enter your name first!';
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/clock', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, action, location: currentLocation })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    msg.style.color = 'green';
+                    msg.textContent = `${action} successful at ${data.timestamp}`;
+                    // Clear the name field optionally after a successful tap
+                    document.getElementById('employeeName').value = '';
+                } else {
+                    msg.style.color = 'red';
+                    msg.textContent = 'Error logging action.';
+                }
+            } catch (e) {
+                msg.style.color = 'red';
+                msg.textContent = 'Network error. Try again.';
+            }
+        }
+    </script>
+</body>
+</html>
